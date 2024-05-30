@@ -1,5 +1,5 @@
 import random
-import sys
+import tkinter
 
 
 class Constants:
@@ -76,6 +76,33 @@ def calculate_bombs_around_count(field):
     return temp_field
 
 
+def open_cascade(field, i, j):
+    if i > 0:
+        if j > 0:
+            if field[i - 1][j - 1][0] != field[i - 1][j - 1][2]:
+                open_cell(None, field, i - 1, j - 1, lambda: True)
+        if field[i - 1][j][0] != field[i - 1][j][2]:
+            open_cell(None, field, i - 1, j, lambda: True)
+        if j < len(field[i - 1]) - 1:
+            if field[i - 1][j + 1][0] != field[i - 1][j + 1][2]:
+                open_cell(None, field, i - 1, j + 1, lambda: True)
+    if i < len(field) - 1:
+        if field[i + 1][j][0] != field[i + 1][j][2]:
+            open_cell(None, field, i + 1, j, lambda: True)
+        if j < len(field[i + 1]) - 1:
+            if field[i + 1][j + 1][0] != field[i + 1][j + 1][2]:
+                open_cell(None, field, i + 1, j + 1, lambda: True)
+        if j > 0:
+            if field[i + 1][j - 1][0] != field[i + 1][j - 1][2]:
+                open_cell(None, field, i + 1, j - 1, lambda: True)
+    if j < len(field) - 1:
+        if field[i][j + 1][0] != field[i][j + 1][2]:
+            open_cell(None, field, i, j + 1, lambda: True)
+    if j > 0:
+        if field[i][j - 1][0] != field[i][j - 1][2]:
+            open_cell(None, field, i, j - 1, lambda: True)
+
+
 def open_cell(event, field, row, col, on_lose):
     print("open!")
     temp_field = field
@@ -84,6 +111,8 @@ def open_cell(event, field, row, col, on_lose):
     else:
         temp_field[row][col][3] = Constants.cellTypes["open"]
         temp_field[row][col][0] = temp_field[row][col][2]
+        if temp_field[row][col][2] == 0:
+            open_cascade(field, row, col)
     return temp_field
 
 
@@ -113,9 +142,8 @@ def check_win(field):
     for i in range(len(field)):
         for j in range(len(field[i])):
             if not (field[i][j][3] == Constants.cellTypes[
-                "open"] or (
-                            field[i][j][1] == Constants.mineTypes[
-                        "exists"] and field[i][j][0] ==
+                "open"] or (field[i][j][1] == Constants.mineTypes[
+                "exists"] and field[i][j][0] ==
                             Constants.selectionTypes["flag"])):
                 isWin = False
     return isWin
