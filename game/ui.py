@@ -28,25 +28,7 @@ class LevelConfigUI(tk.Tk):
     def run(self):
         while self._lcui_run:
             self.update()
-        return (self.w.get(), self.h.get()), self.c.get()
-
-
-class PopupUI(tk.Tk):
-    def __init__(self, msg, name, *buttons):
-        super().__init__()
-        self.title(name)
-        self.geometry('500x150')
-        label = tk.Label(self, text=msg)
-        label.pack(anchor=tk.CENTER)
-        for button in buttons:
-            button_obj = tk.Button(self, text=button[0],
-                                   command=lambda popup=self: button[
-                                       1](popup))
-            button_obj.pack(side=tk.BOTTOM)
-        try:
-            self.mainloop()
-        except tk.TclError:
-            pass
+        return (int(self.w.get()), int(self.h.get())), int(self.c.get())
 
 
 class GameUi(tk.Tk):
@@ -84,7 +66,7 @@ class GameUi(tk.Tk):
             i = cell[0]
             j = cell[1]
             if f[i][j][1] == self.constants.mineTypes["exists"]:
-                cell[2].configure(text=f[i][j][0] + mine_symbol)
+                cell[2].configure(text=str(mine_symbol))
 
     def bind_field(self, field, method1, method2, method3, on_lose):
         def on_lose_2(ui, fieldd):

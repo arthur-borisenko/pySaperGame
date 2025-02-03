@@ -1,9 +1,9 @@
 import time
 
-from game import generate_field, FullUI, PopupUI, generate_mines, \
+from game import generate_field, FullUI, generate_mines, \
     calculate_bombs_around_count, open_cell, tick, accorde, \
     flag_cell, Constants, LevelConfigUI
-
+import tkinter.messagebox as messagebox
 safe = False
 
 
@@ -22,30 +22,37 @@ def lose_popup():
     #msg = PopupUI("you lose!", "сапер",
     #              ["restart", close_and_restart],
     #              ["exit", exit_button])
+    messagebox.showinfo('python minesweeper', 'You Lose!')
     global work
     print("you lose")
-    ui.show_all_mines(f,Constants.mineTypes["exists"])
     work=False
-    ui.mainloop()
 
 
 
 def win_popup():
-    #msg = PopupUI("you won!", "сапер",
-    #              ["restart", close_and_restart],
-     #             ["exit", exit_button])
+    messagebox.showinfo('python minesweeper', 'You Won!')
+    global work
     print("you won")
-    exit_button(PopupUI)
+    work=False
 _lvl = [[10, 10], 20]
 
 
 def _restart(level_data):
-    global f, work
+    global f, work, ui
     work = False
-    time.sleep(3)
+    print("restarting")
+    time.sleep(1)
     f = generate_field(level_data[0][0], level_data[0][1])
     f = generate_mines(f, level_data[1])
     f = calculate_bombs_around_count(f)
+    ui.destroy()
+    ui = FullUI(1000, 1100, f, 30, Constants, change_level, restart,
+                safe_open, get_level_data)
+    ui.generate_field_by_matrix(f)
+    ui.bind_field(f, open_cell_override, accorde, flag_cell,
+                  lose_popup)
+    print("restarted")
+    work=True
 
 
 def restart():
@@ -93,3 +100,5 @@ ui.bind_field(f, open_cell_override, accorde, flag_cell, lose_popup)
 while True:
     if work:
         tick(f, ui)
+    else:
+        ui.update()
